@@ -1,0 +1,13 @@
+import { Router } from 'express';
+import { signup, verifyEmail, login, refresh, logout, forgotPassword, resetPassword, } from '../controllers/auth.js';
+import { validateRequest } from '../middleware/validator.js';
+import { signupSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, } from '../utils/validationSchemas.js';
+const router = Router();
+router.post('/signup', validateRequest(signupSchema), signup);
+router.post('/verify-email', verifyEmail);
+router.post('/login', validateRequest(loginSchema), login);
+router.post('/refresh', refresh);
+router.post('/logout', logout);
+router.post('/forgot-password', validateRequest(forgotPasswordSchema), forgotPassword);
+router.post('/reset-password', validateRequest(resetPasswordSchema), resetPassword);
+export default router;

@@ -27,7 +27,7 @@ app.use(helmet({
     crossOriginResourcePolicy: false, // allows serving images locally if needed
 }));
 // CORS Configuration
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+const frontendUrl = process.env.FRONTEND_URL || 'https://e-commerce-platform-h6s3.vercel.app/';
 app.use(cors({
     origin: frontendUrl,
     credentials: true,

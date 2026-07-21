@@ -77,14 +77,9 @@ const connectDB = async () => {
         });
     }
     catch (error) {
-        console.error('\n================================================================');
-        console.error('DATABASE CONNECTION ERROR:');
-        console.error('Could not connect to MongoDB.');
-        console.error('Please verify that MongoDB is running locally, or configure');
-        console.error('your MONGODB_URI in the "backend/.env" file.');
-        console.error('Example: MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/bigmarket');
-        console.error('================================================================\n');
-        process.exit(1);
-    }
+    console.error("DATABASE CONNECTION ERROR");
+    console.error(error);
+    process.exit(1);
+}
 };
 connectDB();

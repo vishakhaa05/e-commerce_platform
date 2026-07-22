@@ -83,7 +83,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction): P
     });
 
     // Send verification email
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://e-commerce-platform-llu4.vercel.app';
     const verifyUrl = `${frontendUrl}/verify-email?token=${verificationToken}`;
 
     const message = `Welcome to BigMarket! Please verify your email by clicking the link: \n\n ${verifyUrl} \n\n If you did not request this, please ignore this email.`;

@@ -27,10 +27,14 @@ app.use(helmet({
     crossOriginResourcePolicy: false, // allows serving images locally if needed
 }));
 // CORS Configuration
-<<<<<<< HEAD
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+const frontendUrl = process.env.FRONTEND_URL || 'https://e-commerce-platform-llu4.vercel.app';
 const cleanFrontendUrl = frontendUrl.replace(/\/+$/, '');
-const allowedOrigins = [cleanFrontendUrl, `${cleanFrontendUrl}/`];
+const allowedOrigins = [
+  cleanFrontendUrl,
+  `${cleanFrontendUrl}/`,
+  'http://localhost:8080',
+  'http://localhost:8080/'
+];
 
 app.use(
   cors({
@@ -43,15 +47,11 @@ app.use(
       console.warn(`[CORS Blocked] Request from origin "${origin}" was blocked. Allowed origins:`, allowedOrigins);
       return callback(null, false); // Block origin but don't crash server
     },
-=======
-const frontendUrl = process.env.FRONTEND_URL || 'https://e-commerce-platform-llu4.vercel.app';
-app.use(cors({
-    origin: frontendUrl,
->>>>>>> 431d06747075a6e003f704721e21ac25f037e0e6
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+  })
+);
 // Body Parsers
 app.use(express.json());
 app.use(cookieParser());

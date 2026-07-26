@@ -32,7 +32,7 @@ const sendTokenResponse = (user: any, statusCode: number, res: Response) => {
   const cookieOptions: any = {
     httpOnly: true,
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    sameSite: 'strict',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     path: '/api/auth', // only send for auth operations
   };
 
@@ -216,7 +216,8 @@ export const logout = async (req: Request, res: Response, next: NextFunction): P
     res.clearCookie('refreshToken', {
       httpOnly: true,
       path: '/api/auth',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: process.env.NODE_ENV === 'production',
     });
     res.status(200).json({ success: true, message: 'Logged out successfully.' });
   } catch (error) {

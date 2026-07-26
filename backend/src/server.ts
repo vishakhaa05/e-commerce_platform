@@ -33,9 +33,20 @@ app.use(helmet({
 
 // CORS Configuration
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+const cleanFrontendUrl = frontendUrl.replace(/\/+$/, '');
+const allowedOrigins = [cleanFrontendUrl, `${cleanFrontendUrl}/`];
+
 app.use(
   cors({
-    origin: frontendUrl,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, postman, etc.)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      console.warn(`[CORS Blocked] Request from origin "${origin}" was blocked. Allowed origins:`, allowedOrigins);
+      return callback(null, false); // Block origin but don't crash server
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

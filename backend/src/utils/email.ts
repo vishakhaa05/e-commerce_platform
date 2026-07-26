@@ -7,6 +7,8 @@ interface EmailOptions {
   html?: string;
 }
 
+let cachedTransporter: nodemailer.Transporter | null = null;
+
 export const sendEmail = async (options: EmailOptions): Promise<void> => {
   let transporter: nodemailer.Transporter;
 
@@ -24,32 +26,37 @@ export const sendEmail = async (options: EmailOptions): Promise<void> => {
       },
     });
   } else {
-    // Fallback: Generate Ethereal Email test account dynamically
-    console.log('Generating Ethereal test email account...');
-    try {
-      const testAccount = await nodemailer.createTestAccount();
-      transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        secure: false,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass,
-        },
-      });
-      console.log(`Ethereal Email Created! User: ${testAccount.user}`);
-    } catch (err) {
-      console.error('Failed to create Ethereal account, falling back to mock logger:', err);
-      // Fallback to console logger if Ethereal fails
-      console.log('----------------- MOCK EMAIL -----------------');
-      console.log(`To: ${options.email}`);
-      console.log(`Subject: ${options.subject}`);
-      console.log(`Message:\n${options.message}`);
-      if (options.html) {
-        console.log(`HTML:\n${options.html}`);
+    if (cachedTransporter) {
+      transporter = cachedTransporter;
+    } else {
+      // Fallback: Generate Ethereal Email test account dynamically
+      console.log('Generating Ethereal test email account...');
+      try {
+        const testAccount = await nodemailer.createTestAccount();
+        transporter = nodemailer.createTransport({
+          host: 'smtp.ethereal.email',
+          port: 587,
+          secure: false,
+          auth: {
+            user: testAccount.user,
+            pass: testAccount.pass,
+          },
+        });
+        cachedTransporter = transporter;
+        console.log(`Ethereal Email Created! User: ${testAccount.user}`);
+      } catch (err) {
+        console.error('Failed to create Ethereal account, falling back to mock logger:', err);
+        // Fallback to console logger if Ethereal fails
+        console.log('----------------- MOCK EMAIL -----------------');
+        console.log(`To: ${options.email}`);
+        console.log(`Subject: ${options.subject}`);
+        console.log(`Message:\n${options.message}`);
+        if (options.html) {
+          console.log(`HTML:\n${options.html}`);
+        }
+        console.log('----------------------------------------------');
+        return;
       }
-      console.log('----------------------------------------------');
-      return;
     }
   }
 

@@ -99,24 +99,20 @@ export const signup = async (req: Request, res: Response, next: NextFunction): P
       </div>
     `;
 
-    try {
-      await sendEmail({
-        email: user.email,
-        subject: 'BigMarket Account Verification',
-        message,
-        html,
-      });
-      res.status(201).json({
-        success: true,
-        message: 'Registration successful! Verification email sent.',
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(201).json({
-        success: true,
-        message: 'Registration successful, but failed to send verification email. Please contact support.',
-      });
-    }
+    // Send verification email in the background (fire-and-forget) to keep registration instant
+    sendEmail({
+      email: user.email,
+      subject: 'BigMarket Account Verification',
+      message,
+      html,
+    }).catch((err) => {
+      console.error('Failed to send verification email in background:', err);
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Registration successful! A verification email will be sent shortly.',
+    });
   } catch (error) {
     next(error);
   }

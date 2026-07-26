@@ -27,13 +27,19 @@ app.use(helmet({
     crossOriginResourcePolicy: false, // allows serving images locally if needed
 }));
 // CORS Configuration
-const frontendUrl = process.env.FRONTEND_URL || 'https://e-commerce-platform-llu4.vercel.app';
+const frontendUrl = process.env.FRONTEND_URL || 'https://e-commerce-platform-ggle.vercel.app';
 const cleanFrontendUrl = frontendUrl.replace(/\/+$/, '');
 const allowedOrigins = [
   cleanFrontendUrl,
   `${cleanFrontendUrl}/`,
+  'https://e-commerce-platform-ggle.vercel.app',
+  'https://e-commerce-platform-ggle.vercel.app/',
+  'https://e-commerce-platform-llu4.vercel.app',
+  'https://e-commerce-platform-llu4.vercel.app/',
   'http://localhost:8080',
-  'http://localhost:8080/'
+  'http://localhost:8080/',
+  'http://localhost:5173',
+  'http://localhost:5173/'
 ];
 
 app.use(

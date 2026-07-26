@@ -5,7 +5,6 @@ import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
-
 // Import routes
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
@@ -17,21 +16,18 @@ import couponRoutes from './routes/coupon.js';
 import reviewRoutes from './routes/review.js';
 import paymentRoutes from './routes/payment.js';
 import analyticsRoutes from './routes/analytics.js';
-
 // Import middlewares
 import { errorHandler } from './middleware/error.js';
-
 dotenv.config({ override: true });
-
 const app = express();
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 5000;
-
 // Security Middlewares
 app.use(helmet({
-  crossOriginResourcePolicy: false, // allows serving images locally if needed
+    crossOriginResourcePolicy: false, // allows serving images locally if needed
 }));
-
 // CORS Configuration
+<<<<<<< HEAD
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
 const cleanFrontendUrl = frontendUrl.replace(/\/+$/, '');
 const allowedOrigins = [cleanFrontendUrl, `${cleanFrontendUrl}/`];
@@ -47,27 +43,28 @@ app.use(
       console.warn(`[CORS Blocked] Request from origin "${origin}" was blocked. Allowed origins:`, allowedOrigins);
       return callback(null, false); // Block origin but don't crash server
     },
+=======
+const frontendUrl = process.env.FRONTEND_URL || 'https://e-commerce-platform-llu4.vercel.app';
+app.use(cors({
+    origin: frontendUrl,
+>>>>>>> 431d06747075a6e003f704721e21ac25f037e0e6
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
-
+}));
 // Body Parsers
 app.use(express.json());
 app.use(cookieParser());
-
 // Rate Limiter
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // limit each IP to 300 requests per windowMs
-  message: {
-    success: false,
-    message: 'Too many requests from this IP, please try again after 15 minutes.',
-  },
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 300, // limit each IP to 300 requests per windowMs
+    message: {
+        success: false,
+        message: 'Too many requests from this IP, please try again after 15 minutes.',
+    },
 });
 app.use('/api', limiter);
-
 // Mount API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -79,38 +76,29 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/analytics', analyticsRoutes);
-
 // Health Check Endpoint
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'BigMarket API is running.' });
+    res.status(200).json({ status: 'OK', message: 'BigMarket API is running.' });
 });
-
 // Global Error Handler Middleware
 app.use(errorHandler);
-
 // Database Connection & Server Startup
 const connectDB = async () => {
-  try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/bigmarket';
-    console.log('Connecting to MongoDB...');
-    await mongoose.connect(mongoURI, {
-      serverSelectionTimeoutMS: 5000, // Time out after 5 seconds instead of hanging
-    });
-    console.log('MongoDB connected successfully.');
-    
-    app.listen(PORT, () => {
-      console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('\n================================================================');
-    console.error('DATABASE CONNECTION ERROR:');
-    console.error('Could not connect to MongoDB.');
-    console.error('Please verify that MongoDB is running locally, or configure');
-    console.error('your MONGODB_URI in the "backend/.env" file.');
-    console.error('Example: MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/bigmarket');
-    console.error('================================================================\n');
+    try {
+        const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/bigmarket';
+        console.log('Connecting to MongoDB...');
+        await mongoose.connect(mongoURI, {
+            serverSelectionTimeoutMS: 5000, // Time out after 5 seconds instead of hanging
+        });
+        console.log('MongoDB connected successfully.');
+        app.listen(PORT, () => {
+            console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+        });
+    }
+    catch (error) {
+    console.error("DATABASE CONNECTION ERROR");
+    console.error(error);
     process.exit(1);
-  }
+}
 };
-
 connectDB();

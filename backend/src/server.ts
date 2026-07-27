@@ -104,9 +104,15 @@ const connectDB = async () => {
         });
     }
     catch (error) {
-    console.error("DATABASE CONNECTION ERROR");
-    console.error(error);
-    process.exit(1);
-}
+        console.error("\n=========================================");
+        console.error("DATABASE CONNECTION ERROR!");
+        console.error("Could not connect to MongoDB.");
+        console.error("If deploying on Render, please verify that:");
+        console.error("1. MONGODB_URI is correctly configured in your Render Environment Variables.");
+        console.error("2. Your MongoDB Atlas database is allowing access from anywhere (IP address 0.0.0.0/0).");
+        console.error("=========================================\n");
+        console.error(error);
+        process.exit(1);
+    }
 };
 connectDB();

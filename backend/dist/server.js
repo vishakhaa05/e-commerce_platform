@@ -20,15 +20,38 @@ import analyticsRoutes from './routes/analytics.js';
 import { errorHandler } from './middleware/error.js';
 dotenv.config({ override: true });
 const app = express();
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 5000;
 // Security Middlewares
 app.use(helmet({
     crossOriginResourcePolicy: false, // allows serving images locally if needed
 }));
 // CORS Configuration
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+const frontendUrl = process.env.FRONTEND_URL || 'https://e-commerce-platform-ggle.vercel.app';
+const cleanFrontendUrl = frontendUrl.replace(/\/+$/, '');
+const allowedOrigins = [
+    cleanFrontendUrl,
+    `${cleanFrontendUrl}/`,
+    'https://e-commerce-platform-ggle.vercel.app',
+    'https://e-commerce-platform-ggle.vercel.app/',
+    'https://e-commerce-platform-llu4.vercel.app',
+    'https://e-commerce-platform-llu4.vercel.app/',
+    'http://localhost:8080',
+    'http://localhost:8080/',
+    'http://localhost:5173',
+    'http://localhost:5173/'
+];
 app.use(cors({
-    origin: frontendUrl,
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps, curl, postman, etc.)
+        if (!origin)
+            return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        console.warn(`[CORS Blocked] Request from origin "${origin}" was blocked. Allowed origins:`, allowedOrigins);
+        return callback(null, false); // Block origin but don't crash server
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -77,13 +100,14 @@ const connectDB = async () => {
         });
     }
     catch (error) {
-        console.error('\n================================================================');
-        console.error('DATABASE CONNECTION ERROR:');
-        console.error('Could not connect to MongoDB.');
-        console.error('Please verify that MongoDB is running locally, or configure');
-        console.error('your MONGODB_URI in the "backend/.env" file.');
-        console.error('Example: MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/bigmarket');
-        console.error('================================================================\n');
+        console.error("\n=========================================");
+        console.error("DATABASE CONNECTION ERROR!");
+        console.error("Could not connect to MongoDB.");
+        console.error("If deploying on Render, please verify that:");
+        console.error("1. MONGODB_URI is correctly configured in your Render Environment Variables.");
+        console.error("2. Your MongoDB Atlas database is allowing access from anywhere (IP address 0.0.0.0/0).");
+        console.error("=========================================\n");
+        console.error(error);
         process.exit(1);
     }
 };

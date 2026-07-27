@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+let cachedTransporter = null;
 export const sendEmail = async (options) => {
     let transporter;
     // Check if SMTP credentials are provided in env
@@ -15,33 +16,39 @@ export const sendEmail = async (options) => {
         });
     }
     else {
-        // Fallback: Generate Ethereal Email test account dynamically
-        console.log('Generating Ethereal test email account...');
-        try {
-            const testAccount = await nodemailer.createTestAccount();
-            transporter = nodemailer.createTransport({
-                host: 'smtp.ethereal.email',
-                port: 587,
-                secure: false,
-                auth: {
-                    user: testAccount.user,
-                    pass: testAccount.pass,
-                },
-            });
-            console.log(`Ethereal Email Created! User: ${testAccount.user}`);
+        if (cachedTransporter) {
+            transporter = cachedTransporter;
         }
-        catch (err) {
-            console.error('Failed to create Ethereal account, falling back to mock logger:', err);
-            // Fallback to console logger if Ethereal fails
-            console.log('----------------- MOCK EMAIL -----------------');
-            console.log(`To: ${options.email}`);
-            console.log(`Subject: ${options.subject}`);
-            console.log(`Message:\n${options.message}`);
-            if (options.html) {
-                console.log(`HTML:\n${options.html}`);
+        else {
+            // Fallback: Generate Ethereal Email test account dynamically
+            console.log('Generating Ethereal test email account...');
+            try {
+                const testAccount = await nodemailer.createTestAccount();
+                transporter = nodemailer.createTransport({
+                    host: 'smtp.ethereal.email',
+                    port: 587,
+                    secure: false,
+                    auth: {
+                        user: testAccount.user,
+                        pass: testAccount.pass,
+                    },
+                });
+                cachedTransporter = transporter;
+                console.log(`Ethereal Email Created! User: ${testAccount.user}`);
             }
-            console.log('----------------------------------------------');
-            return;
+            catch (err) {
+                console.error('Failed to create Ethereal account, falling back to mock logger:', err);
+                // Fallback to console logger if Ethereal fails
+                console.log('----------------- MOCK EMAIL -----------------');
+                console.log(`To: ${options.email}`);
+                console.log(`Subject: ${options.subject}`);
+                console.log(`Message:\n${options.message}`);
+                if (options.html) {
+                    console.log(`HTML:\n${options.html}`);
+                }
+                console.log('----------------------------------------------');
+                return;
+            }
         }
     }
     const mailOptions = {

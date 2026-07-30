@@ -33,6 +33,7 @@ const allowedOrigins = [
   cleanFrontendUrl,
   `${cleanFrontendUrl}/`,
   'https://e-commerce-platform-cg71.vercel.app/',
+  'https://e-commerce-platform-cg71.vercel.app',
   'https://e-commerce-platform-ggle.vercel.app',
   'https://e-commerce-platform-ggle.vercel.app/',
   'https://e-commerce-platform-llu4.vercel.app',

@@ -16,6 +16,7 @@ import couponRoutes from './routes/coupon.js';
 import reviewRoutes from './routes/review.js';
 import paymentRoutes from './routes/payment.js';
 import analyticsRoutes from './routes/analytics.js';
+import contactRoutes from './routes/contact.js';
 // Import middlewares
 import { errorHandler } from './middleware/error.js';
 dotenv.config({ override: true });
@@ -44,12 +45,22 @@ const allowedOrigins = [
   'http://localhost:5173/'
 ];
 
+const isLocalOrigin = (url: string) => {
+  return (
+    url.startsWith('http://localhost') ||
+    url.startsWith('http://127.0.0.1') ||
+    /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/.test(url) ||
+    /^http:\/\/10\.\d+\.\d+\.\d+(:\d+)?$/.test(url) ||
+    /^http:\/\/172\.(1[6-9]|2\d|3[01])\.\d+\.\d+(:\d+)?$/.test(url)
+  );
+};
+
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, postman, etc.)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
+      if (allowedOrigins.includes(origin) || isLocalOrigin(origin)) {
         return callback(null, true);
       }
       console.warn(`[CORS Blocked] Request from origin "${origin}" was blocked. Allowed origins:`, allowedOrigins);
@@ -84,6 +95,7 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/contact', contactRoutes);
 // Health Check Endpoint
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'BigMarket API is running.' });

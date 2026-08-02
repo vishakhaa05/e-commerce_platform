@@ -18,12 +18,16 @@ const ForgotPassword = () => {
     e.preventDefault();
     if (!email) return;
 
-    setIsSubmitting(true);
-    const success = await forgotPassword(email);
-    setIsSubmitting(false);
-
-    if (success) {
-      setIsSent(true);
+    try {
+      setIsSubmitting(true);
+      const success = await forgotPassword(email);
+      if (success) {
+        setIsSent(true);
+      }
+    } catch (err) {
+      console.error('Forgot password request failed:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

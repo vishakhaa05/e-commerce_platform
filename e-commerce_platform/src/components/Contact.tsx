@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { api } from '@/lib/api';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -12,10 +13,22 @@ const Contact = () => {
     message: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success('Thank you for contacting us! We will get back to you soon.');
-    setFormData({ name: '', email: '', phone: '', message: '' });
+    try {
+      setIsSubmitting(true);
+      const res = await api.post('/contact', formData);
+      if (res.data.success) {
+        toast.success(res.data.message || 'Thank you for contacting us!');
+        setFormData({ name: '', email: '', phone: '', message: '' });
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -92,9 +105,14 @@ const Contact = () => {
 
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground text-lg font-semibold"
             >
-              Send Message
+              {isSubmitting ? (
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-background border-t-transparent mx-auto"></div>
+              ) : (
+                'Send Message'
+              )}
             </Button>
           </form>
         </div>

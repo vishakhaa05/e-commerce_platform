@@ -23,12 +23,16 @@ const Login = () => {
     e.preventDefault();
     if (!email || !password) return;
 
-    setIsSubmitting(true);
-    const success = await login(email, password);
-    setIsSubmitting(false);
-
-    if (success) {
-      navigate(from, { replace: true });
+    try {
+      setIsSubmitting(true);
+      const success = await login(email, password);
+      if (success) {
+        navigate(from, { replace: true });
+      }
+    } catch (err) {
+      console.error('Login failed:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

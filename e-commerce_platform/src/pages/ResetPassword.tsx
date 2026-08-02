@@ -34,12 +34,16 @@ const ResetPassword = () => {
       return;
     }
 
-    setIsSubmitting(true);
-    const success = await resetPassword(token, password);
-    setIsSubmitting(false);
-
-    if (success) {
-      setIsDone(true);
+    try {
+      setIsSubmitting(true);
+      const success = await resetPassword(token, password);
+      if (success) {
+        setIsDone(true);
+      }
+    } catch (err) {
+      console.error('Reset password request failed:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

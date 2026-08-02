@@ -20,12 +20,16 @@ const Signup = () => {
     e.preventDefault();
     if (!name || !email || !password) return;
 
-    setIsSubmitting(true);
-    const success = await signup(name, email, password);
-    setIsSubmitting(false);
-
-    if (success) {
-      navigate('/login');
+    try {
+      setIsSubmitting(true);
+      const success = await signup(name, email, password);
+      if (success) {
+        navigate('/login');
+      }
+    } catch (err) {
+      console.error('Signup failed:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

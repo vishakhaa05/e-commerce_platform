@@ -1,6 +1,16 @@
+import { useState } from 'react';
 import { Truck, CreditCard, Clock, Headphones } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const Services = () => {
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleCardClick = (title: string) => {
+    setSelectedService(title);
+    setIsModalOpen(true);
+  };
+
   const services = [
     {
       icon: Truck,
@@ -40,7 +50,8 @@ const Services = () => {
             return (
               <div
                 key={index}
-                className="bg-card p-6 sm:p-8 rounded-lg text-center card-shadow hover:card-hover-shadow transition-all duration-300 hover:-translate-y-1 group"
+                onClick={() => handleCardClick(service.title)}
+                className="bg-card p-6 sm:p-8 rounded-lg text-center card-shadow hover:card-hover-shadow transition-all duration-300 hover:-translate-y-1 group cursor-pointer border border-border/50 hover:border-primary/30"
               >
                 <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 text-primary mb-4 sm:mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                   <Icon className="h-8 w-8 sm:h-10 sm:w-10" />
@@ -56,6 +67,20 @@ const Services = () => {
           })}
         </div>
       </div>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mb-2">
+              <Clock className="h-6 w-6" />
+            </div>
+            <DialogTitle className="text-xl font-bold">{selectedService} Unavailable</DialogTitle>
+            <DialogDescription className="text-sm pt-3 text-muted-foreground leading-relaxed">
+              This service is currently unavailable. We’re working on it and will make it available on our website soon. Thank you for your patience!
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

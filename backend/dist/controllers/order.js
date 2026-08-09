@@ -211,7 +211,8 @@ export const getInvoice = async (req, res, next) => {
             res.status(404).json({ success: false, message: 'Order not found.' });
             return;
         }
-        if (order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+        const orderUserId = order.user._id ? order.user._id.toString() : order.user.toString();
+        if (orderUserId !== req.user._id.toString() && req.user.role !== 'admin') {
             res.status(403).json({ success: false, message: 'Not authorized.' });
             return;
         }

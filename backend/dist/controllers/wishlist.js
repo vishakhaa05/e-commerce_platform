@@ -33,7 +33,7 @@ export const toggleWishlist = async (req, res, next) => {
         if (!wishlist) {
             wishlist = await Wishlist.create({ user: req.user._id, products: [] });
         }
-        const index = wishlist.products.indexOf(productId);
+        const index = wishlist.products.findIndex(id => id.toString() === productId.toString());
         let isAdded = false;
         if (index === -1) {
             wishlist.products.push(productId);

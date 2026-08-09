@@ -3,21 +3,28 @@ import { sendEmail } from '../utils/email.js';
 
 export const submitContactForm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { name, email, phone, message } = req.body;
+    const { name, email, subject, message } = req.body;
 
-    if (!name || !email || !phone || !message) {
+    if (!name || !email || !subject || !message) {
       res.status(400).json({ success: false, message: 'All fields are required.' });
       return;
     }
 
-    const emailSubject = `New Contact Us Inquiry from ${name}`;
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      res.status(400).json({ success: false, message: 'Please provide a valid email address.' });
+      return;
+    }
+
+    const emailSubject = `New Contact Inquiry: ${subject}`;
     const emailText = `
 You have received a new contact inquiry.
 
 Details:
 Name: ${name}
 Email: ${email}
-Phone: ${phone}
+Subject: ${subject}
 Message:
 ${message}
     `;
@@ -27,7 +34,7 @@ ${message}
         <h2 style="color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 10px;">New Contact Inquiry</h2>
         <p><strong>Name:</strong> ${name}</p>
         <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
         <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #10b981; border-radius: 4px;">
           <p style="margin: 0; font-weight: bold;">Message:</p>
           <p style="margin: 10px 0 0 0; white-space: pre-wrap;">${message}</p>
@@ -45,7 +52,7 @@ ${message}
 
     res.status(200).json({
       success: true,
-      message: 'Your inquiry has been sent successfully. Thank you!',
+      message: 'Thank you for contacting us! Your message has been sent successfully.',
     });
   } catch (error) {
     next(error);

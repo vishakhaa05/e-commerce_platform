@@ -9,7 +9,7 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
+    subject: '',
     message: ''
   });
 
@@ -17,15 +17,30 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Frontend validation
+    const { name, email, subject, message } = formData;
+    if (!name.trim() || !email.trim() || !subject.trim() || !message.trim()) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       const res = await api.post('/contact', formData);
       if (res.data.success) {
-        toast.success(res.data.message || 'Thank you for contacting us!');
-        setFormData({ name: '', email: '', phone: '', message: '' });
+        toast.success('Thank you for contacting us! Your message has been sent successfully.');
+        setFormData({ name: '', email: '', subject: '', message: '' });
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to send message. Please try again.');
+      toast.error(err.response?.data?.message || 'Something went wrong. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
@@ -76,16 +91,16 @@ const Contact = () => {
             </div>
 
             <div>
-              <Label htmlFor="phone" className="text-base">Phone</Label>
+              <Label htmlFor="subject" className="text-base">Subject</Label>
               <Input
-                id="phone"
-                name="phone"
-                type="tel"
+                id="subject"
+                name="subject"
+                type="text"
                 required
-                value={formData.phone}
+                value={formData.subject}
                 onChange={handleChange}
                 className="mt-2 h-12"
-                placeholder="+91 1234567890"
+                placeholder="Message subject"
               />
             </div>
 
@@ -111,7 +126,7 @@ const Contact = () => {
               {isSubmitting ? (
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-background border-t-transparent mx-auto"></div>
               ) : (
-                'Send Message'
+                'Submit'
               )}
             </Button>
           </form>

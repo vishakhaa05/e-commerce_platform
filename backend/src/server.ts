@@ -55,12 +55,21 @@ const isLocalOrigin = (url: string) => {
   );
 };
 
+const isAllowedVercelOrigin = (url: string) => {
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname === 'vercel.app' || parsed.hostname.endsWith('.vercel.app');
+  } catch {
+    return false;
+  }
+};
+
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, postman, etc.)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin) || isLocalOrigin(origin)) {
+      if (allowedOrigins.includes(origin) || isLocalOrigin(origin) || isAllowedVercelOrigin(origin)) {
         return callback(null, true);
       }
       console.warn(`[CORS Blocked] Request from origin "${origin}" was blocked. Allowed origins:`, allowedOrigins);

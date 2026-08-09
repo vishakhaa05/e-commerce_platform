@@ -5,6 +5,11 @@ import { Product } from '../models/Product.js';
 import { Category } from '../models/Category.js';
 import { User } from '../models/User.js';
 import { Coupon } from '../models/Coupon.js';
+import { Order } from '../models/Order.js';
+import { Review } from '../models/Review.js';
+import { Wishlist } from '../models/Wishlist.js';
+import { Notification } from '../models/Notification.js';
+import { VisitorAnalytics } from '../models/VisitorAnalytics.js';
 
 dotenv.config({ override: true });
 
@@ -237,6 +242,11 @@ const seedDB = async () => {
     await Product.deleteMany();
     await User.deleteMany();
     await Coupon.deleteMany();
+    await Order.deleteMany();
+    await Review.deleteMany();
+    await Wishlist.deleteMany();
+    await Notification.deleteMany();
+    await VisitorAnalytics.deleteMany();
 
     // Seed Categories
     console.log('Seeding categories...');

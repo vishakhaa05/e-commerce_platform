@@ -44,7 +44,7 @@ export const toggleWishlist = async (req: AuthRequest, res: Response, next: Next
       wishlist = await Wishlist.create({ user: req.user._id, products: [] });
     }
 
-    const index = wishlist.products.indexOf(productId);
+    const index = wishlist.products.findIndex(id => id.toString() === productId.toString());
 
     let isAdded = false;
 

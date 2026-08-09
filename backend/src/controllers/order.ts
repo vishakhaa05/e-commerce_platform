@@ -243,7 +243,8 @@ export const getInvoice = async (req: AuthRequest, res: Response, next: NextFunc
       return;
     }
 
-    if (order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+    const orderUserId = (order.user as any)._id ? (order.user as any)._id.toString() : order.user.toString();
+    if (orderUserId !== req.user._id.toString() && req.user.role !== 'admin') {
       res.status(403).json({ success: false, message: 'Not authorized.' });
       return;
     }
